@@ -1,4 +1,3 @@
-
 /**
  * make html element scalable by mouse wheel
  * @param el target html element
@@ -6,30 +5,46 @@
  */
 export default function Scalable(el: HTMLElement, options?: IOptions) {
 
+  let mouseX: number = -1, mouseY: number = -1;
+
   const oldOrigin = el.style.transformOrigin;
   const oldTrans = window.getComputedStyle(el).transform;
   const { onScaleChange, maxScale = 5, minScale = 1 } = options || {};
 
-  let mouseX = -1, mouseY = -1;
   // matrix(3.5, 0, 0, 3.5, 0, 0)
   function handleScale(e: MouseWheelEvent) {
-    e.preventDefault();
-    let parts = getTransform(el);
-    let scale = +parts[0];
-    scale += e.deltaY * -0.005;
-    scale = Math.min(Math.max(minScale, scale), maxScale);
-    if (e.deltaY > 0) {
-      // try move to center when scale down
-      parts[4] = String(+parts[4] * 0.5);
-      parts[5] = String(+parts[5] * 0.5);
+    const parts: Array<number | string> = getTransform(el);
+    const oldScale = +parts[0];
+    if (
+      (e.deltaY < 0 && oldScale >= maxScale)
+      || (e.deltaY > 0 && oldScale <= minScale)
+    ) {
+      return
     }
-    parts[0] = String(scale);
-    parts[3] = String(scale);
-    el.style.transformOrigin = `${mouseX}px ${mouseY}px`;
+    const deltScale = e.deltaY * 0.005;
+    const scale = Math.min(Math.max(minScale, oldScale - deltScale), maxScale);
+
+    const deltW = deltScale * el.offsetWidth * (mouseX / el.offsetWidth);
+    const deltH = deltScale * el.offsetHeight * (mouseY / el.offsetHeight);
+    parts[4] = +parts[4] + deltW;
+    parts[5] = +parts[5] + deltH;
+
+    parts[0] = scale;
+    parts[3] = scale;
+
+    // if (moveToStart && e.deltaY > 0) {
+    //   // try move to start position when scale down
+    //   parts[4] = +parts[4] * 0.5;
+    //   parts[5] = +parts[5] * 0.5;
+    // }
+
+    el.style.transformOrigin = '0 0';
     el.style.transform = `matrix(${parts.join(",")})`;
     if (onScaleChange) {
       onScaleChange({ scale })
     }
+
+    e.preventDefault();
   }
 
   function reset() {
@@ -84,4 +99,8 @@ export interface IOptions {
    * default to 1;
    */
   minScale?: number;
+  /**
+    * if to move to start when scale down. default to true
+    */
+  // moveToStart?: boolean;
 }

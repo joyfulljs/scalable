@@ -4,11 +4,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Scalable Demo</title>
+  <style>
+    #container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      border: solid 1px red;
+      overflow: hidden;
+    }
+
+    #target {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      left: 50%;
+      top: 50%;
+      margin-top: -50px;
+      margin-left: -50px;
+      background-color: green;
+    }
+  </style>
 </head>
 
 <body>
-
+  <div id="container">
+    <div id='target'></div>
+  </div>
+  <script src="../dist/scalable.min.js"></script>
+  <script>
+    const instance = new Scalable.default(target, {
+      onScaleChange(scale) {
+        console.log('current scale:', scale);
+      }
+    });
+  </script>
 </body>
 
 </html>

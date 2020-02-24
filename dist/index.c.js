@@ -1,9 +1,13 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 /**
  * make html element scalable by mouse wheel
  * @param el target html element
  * @param options
  */
-export default function Scalable(el, options) {
+function Scalable(el, options) {
     var mouseX = -1, mouseY = -1;
     var oldOrigin = el.style.transformOrigin;
     var oldTrans = window.getComputedStyle(el).transform;
@@ -60,10 +64,13 @@ export default function Scalable(el, options) {
  * get computed style of transform
  * @param el target html element
  */
-export function getTransform(el) {
+function getTransform(el) {
     var transform = window.getComputedStyle(el).transform;
     if (!transform || transform === 'none') {
         transform = 'matrix(1, 0, 0, 1, 0, 0)';
     }
     return transform.replace(/\(|\)|matrix|\s+/g, '').split(',');
 }
+
+exports.default = Scalable;
+exports.getTransform = getTransform;

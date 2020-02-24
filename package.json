@@ -2,8 +2,8 @@
   "name": "@joyfulljs/scalable",
   "version": "1.0.0",
   "description": "make element scalable by nouse wheel",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.c.js",
+  "module": "dist/index.js",
   "scripts": {
     "build": "tsc && rollup -c",
     "test": "jest",

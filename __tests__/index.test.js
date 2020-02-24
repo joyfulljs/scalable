@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const { default: Scalable, getTransform } = require('../dist/index');
+const { default: Scalable, getTransform } = require('../dist/index.c');
 
 // use jquery to bind/remove event
 const oldBinder = HTMLElement.prototype.addEventListener;
@@ -20,11 +20,23 @@ const newRemove = function (type, callback) {
 HTMLElement.prototype.addEventListener = newBinder;
 HTMLElement.prototype.removeEventListener = newRemove;
 
+Object.defineProperties(HTMLElement.prototype, {
+  offsetHeight: {
+    get: function () { return 100; }
+  },
+  offsetWidth: {
+    get: function () { return 100; }
+  }
+});
+
 function createEl() {
   let el = document.createElement('div');
   let parentNode = document.createElement('div');
   parentNode.appendChild(el);
   document.body.appendChild(parentNode);
+
+  el.offsetHeight = 100;
+  el.offsetWidth = 100;
 
   return [el, parentNode]
 }
@@ -46,7 +58,7 @@ test('scale & reset correctly', () => {
 
   // test scale
   let newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(5,0,0,5,0,0)');
+  expect(newTrans).toBe('matrix(5,0,0,5,4.5,4.5)');
 
   // test reset
   instance.reset();
@@ -64,7 +76,7 @@ test('maxScale & minScale correctly', () => {
   $(parentNode).trigger(event);
 
   let newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(4,0,0,4,0,0)');
+  expect(newTrans).toBe('matrix(4,0,0,4,4.5,4.5)');
 
   instance.reset();
 
@@ -73,7 +85,7 @@ test('maxScale & minScale correctly', () => {
   $(parentNode).trigger(event);
 
   newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(0.5,0,0,0.5,0,0)');
+  expect(newTrans).toBe('matrix(0.5,0,0,0.5,-4.5,-4.5)');
 })
 
 test('trigger onScaleChange & destroy correctly', () => {

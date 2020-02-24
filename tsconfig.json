@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "target": "es6",
+    "target": "ES5",
+    "module": "ES6",
     "noImplicitAny": true,
     "removeComments": false,
     "moduleResolution": "node",

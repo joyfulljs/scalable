@@ -1,5 +1,6 @@
 import banner from 'rollup-plugin-banner';
 import { terser } from "rollup-plugin-terser";
+import pkg from './package.json';
 
 const BannerStr =
   `<%= pkg.name %> v<%= pkg.version %>
@@ -11,7 +12,7 @@ export default [{
   output: [{
     file: 'dist/scalable.min.js',
     format: 'umd',
-    name: 'Imagemin',
+    name: 'Scalable',
     plugins: [
       terser({
         output: {
@@ -26,10 +27,7 @@ export default [{
       banner(BannerStr)
     ]
   }, {
-    file: 'dist/index.js',
+    file: pkg.main,
     format: 'cjs'
-  }, {
-    file: 'dist/index.esm.js',
-    format: 'esm'
   }]
 }];
