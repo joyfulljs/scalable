@@ -4,7 +4,9 @@
     "target": "es6",
     "noImplicitAny": true,
     "removeComments": false,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationDir": "./"
   },
   "files": [
     "index.ts"

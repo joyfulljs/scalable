@@ -3,17 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 /**
- * get computed style of transform
- * @param el target html element
- */
-function getTransform(el) {
-    let transform = window.getComputedStyle(el).transform;
-    if (!transform || transform === 'none') {
-        transform = 'matrix(1, 0, 0, 1, 0, 0)';
-    }
-    return transform.replace(/\(|\)|matrix|\s+/g, '').split(',');
-}
-/**
  * make html element scalable by mouse wheel
  * @param el target html element
  * @param options
@@ -49,17 +38,30 @@ function Scalable(el, options) {
         el.style.transformOrigin = oldOrigin;
         el.style.transform = oldTrans;
     }
-    el.parentNode.addEventListener('wheel', handleScale);
-    el.addEventListener("mousemove", e => {
+    function mousemove(e) {
         mouseX = e.offsetX;
         mouseY = e.offsetY;
-    });
+    }
+    el.parentNode.addEventListener('wheel', handleScale);
+    el.addEventListener("mousemove", mousemove);
     return {
         reset,
         destroy() {
-            el.removeEventListener('wheel', handleScale);
+            el.parentNode.removeEventListener('wheel', handleScale);
+            el.removeEventListener('mousemove', mousemove);
         }
     };
+}
+/**
+ * get computed style of transform
+ * @param el target html element
+ */
+function getTransform(el) {
+    let transform = window.getComputedStyle(el).transform;
+    if (!transform || transform === 'none') {
+        transform = 'matrix(1, 0, 0, 1, 0, 0)';
+    }
+    return transform.replace(/\(|\)|matrix|\s+/g, '').split(',');
 }
 
 exports.default = Scalable;
