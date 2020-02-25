@@ -1,24 +1,8 @@
 const $ = require('jquery');
 const { default: Scalable, getTransform } = require('../dist/index.c');
+const jestUtils = require('@joyfulljs/jest-utils');
 
-// use jquery to bind/remove event
-const oldBinder = HTMLElement.prototype.addEventListener;
-const oldRemove = HTMLElement.prototype.removeEventListener;
-
-const newBinder = function (type, callback) {
-  HTMLElement.prototype.addEventListener = oldBinder;
-  $(this).on(type, callback);
-  HTMLElement.prototype.addEventListener = newBinder;
-}
-
-const newRemove = function (type, callback) {
-  HTMLElement.prototype.removeEventListener = oldRemove;
-  $(this).off(type, callback);
-  HTMLElement.prototype.removeEventListener = newRemove;
-}
-
-HTMLElement.prototype.addEventListener = newBinder;
-HTMLElement.prototype.removeEventListener = newRemove;
+jestUtils.mockEventBinding();
 
 Object.defineProperties(HTMLElement.prototype, {
   offsetHeight: {
