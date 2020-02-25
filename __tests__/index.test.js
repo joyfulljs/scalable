@@ -34,10 +34,6 @@ function createEl() {
   let parentNode = document.createElement('div');
   parentNode.appendChild(el);
   document.body.appendChild(parentNode);
-
-  el.offsetHeight = 100;
-  el.offsetWidth = 100;
-
   return [el, parentNode]
 }
 
@@ -66,6 +62,21 @@ test('scale & reset correctly', () => {
   expect(newTrans).toBe(originTrans);
 })
 
+test('followMouse work correctly', () => {
+  const [el, parentNode] = createEl();
+  const instance = new Scalable(el);
+
+  const mouseEvent = $.Event('mousemove', { offsetX: 20, offsetY: 30 });
+  const event = $.Event('wheel', { deltaY: -900 });
+  $(el).trigger(mouseEvent);
+  $(parentNode).trigger(event);
+
+  // test scale
+  let newTrans = window.getComputedStyle(el).transform;
+  expect(newTrans).toBe('matrix(5,0,0,5,-90,-135)');
+})
+
+
 test('maxScale & minScale correctly', () => {
 
   const [el, parentNode] = createEl();
@@ -81,11 +92,11 @@ test('maxScale & minScale correctly', () => {
   instance.reset();
 
   // test min scale
-  event = $.Event('wheel', { deltaY: 900 });
+  event = $.Event('wheel', { deltaY: 80 });
   $(parentNode).trigger(event);
 
   newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(0.5,0,0,0.5,-4.5,-4.5)');
+  expect(newTrans).toBe('matrix(0.6,0,0,0.6,-0.4,-0.4)');
 })
 
 test('trigger onScaleChange & destroy correctly', () => {

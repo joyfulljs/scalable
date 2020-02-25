@@ -5,11 +5,12 @@
  */
 export default function Scalable(el: HTMLElement, options?: IOptions) {
 
-  let mouseX: number = -1, mouseY: number = -1;
+  const { onScaleChange, maxScale = 5, minScale = 1, followMouse = true } = options || {};
+  const computedStyle = window.getComputedStyle(el);
+  const oldOrigin = computedStyle.transformOrigin;
+  const oldTrans = computedStyle.transform;
 
-  const oldOrigin = el.style.transformOrigin;
-  const oldTrans = window.getComputedStyle(el).transform;
-  const { onScaleChange, maxScale = 5, minScale = 1 } = options || {};
+  let mouseX: number = -1, mouseY: number = -1;
 
   // matrix(3.5, 0, 0, 3.5, 0, 0)
   function handleScale(e: MouseWheelEvent) {
@@ -22,28 +23,24 @@ export default function Scalable(el: HTMLElement, options?: IOptions) {
       return
     }
     const deltScale = e.deltaY * 0.005;
-    const scale = Math.min(Math.max(minScale, oldScale - deltScale), maxScale);
-
-    const deltW = deltScale * el.offsetWidth * (mouseX / el.offsetWidth);
-    const deltH = deltScale * el.offsetHeight * (mouseY / el.offsetHeight);
-    parts[4] = +parts[4] + deltW;
-    parts[5] = +parts[5] + deltH;
-
+    const scale = Math.min(
+      Math.max(minScale, oldScale - deltScale),
+      maxScale
+    );
+    if (followMouse) {
+      // deltScale * el.offsetWidth * (mouseX / el.offsetWidth);
+      const deltW = deltScale * mouseX;
+      // deltScale * el.offsetHeight * (mouseY / el.offsetHeight);
+      const deltH = deltScale * mouseY;
+      parts[4] = +parts[4] + deltW;
+      parts[5] = +parts[5] + deltH;
+    }
     parts[0] = scale;
     parts[3] = scale;
-
-    // if (moveToStart && e.deltaY > 0) {
-    //   // try move to start position when scale down
-    //   parts[4] = +parts[4] * 0.5;
-    //   parts[5] = +parts[5] * 0.5;
-    // }
-
-    el.style.transformOrigin = '0 0';
     el.style.transform = `matrix(${parts.join(",")})`;
     if (onScaleChange) {
       onScaleChange({ scale })
     }
-
     e.preventDefault();
   }
 
@@ -60,7 +57,10 @@ export default function Scalable(el: HTMLElement, options?: IOptions) {
   }
 
   el.parentNode.addEventListener('wheel', handleScale);
-  el.addEventListener("mousemove", mousemove);
+  if (followMouse) {
+    el.style.transformOrigin = '0 0';
+    el.addEventListener("mousemove", mousemove);
+  }
 
   return {
     reset,
@@ -103,4 +103,8 @@ export interface IOptions {
     * if to move to start when scale down. default to true
     */
   // moveToStart?: boolean;
+  /**
+   * if to take the mouse position as the transform origin.
+   */
+  followMouse?: boolean
 }

@@ -8,10 +8,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
  * @param options
  */
 function Scalable(el, options) {
+    var _a = options || {}, onScaleChange = _a.onScaleChange, _b = _a.maxScale, maxScale = _b === void 0 ? 5 : _b, _c = _a.minScale, minScale = _c === void 0 ? 1 : _c, _d = _a.followMouse, followMouse = _d === void 0 ? true : _d;
+    var computedStyle = window.getComputedStyle(el);
+    var oldOrigin = computedStyle.transformOrigin;
+    var oldTrans = computedStyle.transform;
     var mouseX = -1, mouseY = -1;
-    var oldOrigin = el.style.transformOrigin;
-    var oldTrans = window.getComputedStyle(el).transform;
-    var _a = options || {}, onScaleChange = _a.onScaleChange, _b = _a.maxScale, maxScale = _b === void 0 ? 5 : _b, _c = _a.minScale, minScale = _c === void 0 ? 1 : _c;
     // matrix(3.5, 0, 0, 3.5, 0, 0)
     function handleScale(e) {
         var parts = getTransform(el);
@@ -22,18 +23,16 @@ function Scalable(el, options) {
         }
         var deltScale = e.deltaY * 0.005;
         var scale = Math.min(Math.max(minScale, oldScale - deltScale), maxScale);
-        var deltW = deltScale * el.offsetWidth * (mouseX / el.offsetWidth);
-        var deltH = deltScale * el.offsetHeight * (mouseY / el.offsetHeight);
-        parts[4] = +parts[4] + deltW;
-        parts[5] = +parts[5] + deltH;
+        if (followMouse) {
+            // deltScale * el.offsetWidth * (mouseX / el.offsetWidth);
+            var deltW = deltScale * mouseX;
+            // deltScale * el.offsetHeight * (mouseY / el.offsetHeight);
+            var deltH = deltScale * mouseY;
+            parts[4] = +parts[4] + deltW;
+            parts[5] = +parts[5] + deltH;
+        }
         parts[0] = scale;
         parts[3] = scale;
-        // if (moveToStart && e.deltaY > 0) {
-        //   // try move to start position when scale down
-        //   parts[4] = +parts[4] * 0.5;
-        //   parts[5] = +parts[5] * 0.5;
-        // }
-        el.style.transformOrigin = '0 0';
         el.style.transform = "matrix(" + parts.join(",") + ")";
         if (onScaleChange) {
             onScaleChange({ scale: scale });
@@ -51,7 +50,10 @@ function Scalable(el, options) {
         mouseY = e.offsetY;
     }
     el.parentNode.addEventListener('wheel', handleScale);
-    el.addEventListener("mousemove", mousemove);
+    if (followMouse) {
+        el.style.transformOrigin = '0 0';
+        el.addEventListener("mousemove", mousemove);
+    }
     return {
         reset: reset,
         destroy: function () {

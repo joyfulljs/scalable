@@ -30,4 +30,11 @@ export interface IOptions {
      * default to 1;
      */
     minScale?: number;
+    /**
+      * if to move to start when scale down. default to true
+      */
+    /**
+     * if to take the mouse position as the transform origin.
+     */
+    followMouse?: boolean;
 }
