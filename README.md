@@ -1,4 +1,4 @@
-# make element scalable by nouse wheel
+# make element scalable by mouse wheel
 
 # useage
 
