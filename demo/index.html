@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scalable Demo</title>
   <style>
+    input {
+      font-size: 14px;
+    }
+
     #container {
       position: relative;
       width: 500px;
@@ -16,28 +20,57 @@
 
     #target {
       position: absolute;
-      width: 100px;
-      height: 100px;
+      width: 50px;
+      height: 50px;
       left: 50%;
       top: 50%;
-      margin-top: -50px;
-      margin-left: -50px;
+      margin-top: -25px;
+      margin-left: -25px;
       background-color: green;
     }
   </style>
 </head>
 
 <body>
+  <form id="form">
+    <p>
+      maxScale: <input id="maxScale" type="number" value="5" />
+      minScale: <input id="minScale" type="number" value="1" min="0.1" step="0.1" />
+    </p>
+    <p>
+      followMouse: <input id="followMouse" type="checkbox" checked />
+    </p>
+    <p><button type="submit" style="font-size: 16px;">Go</button></p>
+  </form>
   <div id="container">
     <div id='target'></div>
   </div>
   <script src="../dist/scalable.min.js"></script>
   <script>
-    const instance = new Scalable.default(target, {
-      onScaleChange(scale) {
-        console.log('current scale:', scale);
+
+    function initilize() {
+      const options = {
+        followMouse: followMouse.checked,
+        onScaleChange(scale) {
+          console.log('current scale:', scale);
+        }
+      };
+      if (+maxScale.value) {
+        options.maxScale = +maxScale.value
       }
-    });
+      if (+minScale.value) {
+        options.minScale = +minScale.value
+      }
+      console.log('options: ', options);
+      return new Scalable.default(target, options);
+    }
+    let instance = initilize();
+    form.onsubmit = function (e) {
+      e.preventDefault();
+      instance.reset();
+      instance.destroy();
+      instance = initilize();
+    }
   </script>
 </body>
 
