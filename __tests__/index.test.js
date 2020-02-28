@@ -18,6 +18,7 @@ function createEl() {
   let parentNode = document.createElement('div');
   parentNode.appendChild(el);
   document.body.appendChild(parentNode);
+  el.style.transformOrigin = '50px 50px';
   return [el, parentNode]
 }
 
@@ -38,7 +39,7 @@ test('scale & reset correctly', () => {
 
   // test scale
   let newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(5,0,0,5,4.5,4.5)');
+  expect(newTrans).toBe('matrix(5.5,0,0,5.5,0,0)');
 
   // test reset
   instance.reset();
@@ -57,11 +58,10 @@ test('followMouse work correctly', () => {
 
   // test scale
   let newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(5,0,0,5,-90,-135)');
+  expect(newTrans).toBe('matrix(5.5,0,0,5.5,135,90)');
 })
 
-
-test('maxScale & minScale correctly', () => {
+test('maxScale & minScale works correctly', () => {
 
   const [el, parentNode] = createEl();
   const instance = new Scalable(el, { maxScale: 4, minScale: 0.5 });
@@ -70,8 +70,9 @@ test('maxScale & minScale correctly', () => {
   let event = $.Event('wheel', { deltaY: -900 });
   $(parentNode).trigger(event);
 
+  console.log('======', window.getComputedStyle(el).transformOrigin)
   let newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(4,0,0,4,4.5,4.5)');
+  expect(newTrans).toBe('matrix(4,0,0,4,0,0)');
 
   instance.reset();
 
@@ -80,7 +81,7 @@ test('maxScale & minScale correctly', () => {
   $(parentNode).trigger(event);
 
   newTrans = window.getComputedStyle(el).transform;
-  expect(newTrans).toBe('matrix(0.6,0,0,0.6,-0.4,-0.4)');
+  expect(newTrans).toBe('matrix(0.6,0,0,0.6,0,0)');
 })
 
 test('trigger onScaleChange & destroy correctly', () => {
@@ -95,7 +96,7 @@ test('trigger onScaleChange & destroy correctly', () => {
   const event = $.Event('wheel', { deltaY: -900 });
   $(parentNode).trigger(event);
   expect(change).toHaveBeenCalledTimes(1);
-  expect(change.mock.calls[0][0].scale).toBe(5);
+  expect(change.mock.calls[0][0].scale).toBe(5.5);
 
   // test destroy
   instance.destroy();
