@@ -128,6 +128,9 @@ export function getTransformOrigin(el: HTMLElement): number[] {
   return transformOrigin.split(/\s+/).map(parseFloat);
 }
 
+/**
+ * instance configration options
+ */
 export interface IOptions {
   /**
    * triggered when user scaling
