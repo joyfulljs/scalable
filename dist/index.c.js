@@ -3,15 +3,50 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 /**
+ * vendor prefixes that being taken into consideration.
+ */
+var vendors = ['webkit', 'ms', 'moz', 'o'];
+/**
+ * get vendor property name that contains uppercase letter.
+ * e.g. webkitTransform
+ * @param prop property name. for example: transform
+ * @param host optional. property owner. default to `document.body.style`.
+ */
+function getProperty(prop, host) {
+    var targetHost = host || document.body.style;
+    if (!(prop in targetHost)) {
+        var char1 = prop.charAt(0).toUpperCase();
+        var charLeft = prop.substr(1);
+        for (var i = 0; i < vendors.length; i++) {
+            var vendorProp = vendors[i] + char1 + charLeft;
+            if (vendorProp in targetHost) {
+                return vendorProp;
+            }
+        }
+    }
+    return prop;
+}
+
+/**
+ * `transformOrigin` property name with browser vendor prefix if needed.
+ */
+var transformOriginProperty = getProperty('transformOrigin');
+/**
+ * `transform` property name with browser vendor prefix if needed.
+ */
+var transformProperty = getProperty('transform');
+/**
  * make html element scalable by mouse wheel
  * @param el target html element
  * @param options
  */
 function Scalable(el, options) {
-    var _a = options || {}, onScaleChange = _a.onScaleChange, _b = _a.maxScale, maxScale = _b === void 0 ? 5 : _b, _c = _a.minScale, minScale = _c === void 0 ? 1 : _c, _d = _a.followMouse, followMouse = _d === void 0 ? true : _d;
+    var _a = options || {}, onScaleChange = _a.onScaleChange, _b = _a.maxScale, maxScale = _b === void 0 ? 50 : _b, _c = _a.minScale, minScale = _c === void 0 ? 1 : _c, _d = _a.followMouse, followMouse = _d === void 0 ? true : _d;
     var computedStyle = window.getComputedStyle(el);
-    var oldOrigin = computedStyle.transformOrigin;
-    var oldTrans = computedStyle.transform;
+    // @ts-ignore  ts handle string index incorrectly. so ingore.
+    var oldOrigin = computedStyle[transformOriginProperty];
+    // @ts-ignore
+    var oldTrans = computedStyle[transformProperty];
     var mouseX = -1, mouseY = -1;
     // matrix(3.5, 0, 0, 3.5, 0, 0)
     function handleScale(e) {
@@ -33,7 +68,8 @@ function Scalable(el, options) {
         }
         parts[0] = scale;
         parts[3] = scale;
-        el.style.transform = "matrix(" + parts.join(",") + ")";
+        // @ts-ignore
+        el.style[transformProperty] = "matrix(" + parts.join(",") + ")";
         if (onScaleChange) {
             onScaleChange({ scale: scale });
         }
@@ -42,8 +78,10 @@ function Scalable(el, options) {
     function reset() {
         mouseX = -1;
         mouseY = -1;
-        el.style.transformOrigin = oldOrigin;
-        el.style.transform = oldTrans;
+        // @ts-ignore
+        el.style[transformOriginProperty] = oldOrigin;
+        // @ts-ignore
+        el.style[transformProperty] = oldTrans;
     }
     function mousemove(e) {
         mouseX = e.offsetX;
@@ -51,7 +89,8 @@ function Scalable(el, options) {
     }
     el.parentNode.addEventListener('wheel', handleScale);
     if (followMouse) {
-        el.style.transformOrigin = '0 0';
+        // @ts-ignore
+        el.style[transformOriginProperty] = '0 0';
         el.addEventListener("mousemove", mousemove);
     }
     return {
@@ -67,7 +106,8 @@ function Scalable(el, options) {
  * @param el target html element
  */
 function getTransform(el) {
-    var transform = window.getComputedStyle(el).transform;
+    // @ts-ignore
+    var transform = window.getComputedStyle(el)[transformProperty];
     if (!transform || transform === 'none') {
         transform = 'matrix(1, 0, 0, 1, 0, 0)';
     }
@@ -76,3 +116,5 @@ function getTransform(el) {
 
 exports.default = Scalable;
 exports.getTransform = getTransform;
+exports.transformOriginProperty = transformOriginProperty;
+exports.transformProperty = transformProperty;

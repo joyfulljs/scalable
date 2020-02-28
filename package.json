@@ -1,6 +1,6 @@
 {
   "name": "@joyfulljs/scalable",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "make element scalable by nouse wheel",
   "main": "dist/index.c.js",
   "module": "dist/index.js",
@@ -32,11 +32,15 @@
   "typings": "./index.d.ts",
   "devDependencies": {
     "@joyfulljs/jest-utils": "^1.0.1",
+    "@rollup/plugin-node-resolve": "^7.1.1",
     "jest": "^25.1.0",
     "jquery": "^3.4.1",
     "rollup": "^1.31.1",
     "rollup-plugin-banner": "^0.2.1",
     "rollup-plugin-terser": "^5.2.0",
     "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@joyfulljs/vendor-property": "^1.0.1"
   }
 }

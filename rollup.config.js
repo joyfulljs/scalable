@@ -1,5 +1,6 @@
 import banner from 'rollup-plugin-banner';
 import { terser } from "rollup-plugin-terser";
+import resolve from '@rollup/plugin-node-resolve';
 import pkg from './package.json';
 
 const BannerStr =
@@ -9,6 +10,7 @@ Released under the MIT License.`
 
 export default [{
   input: 'dist/index.js',
+  plugins: [resolve()],
   output: [{
     file: 'dist/scalable.min.js',
     format: 'umd',

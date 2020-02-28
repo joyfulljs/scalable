@@ -1,4 +1,12 @@
 /**
+ * `transformOrigin` property name with browser vendor prefix if needed.
+ */
+export declare const transformOriginProperty: string;
+/**
+ * `transform` property name with browser vendor prefix if needed.
+ */
+export declare const transformProperty: string;
+/**
  * make html element scalable by mouse wheel
  * @param el target html element
  * @param options
@@ -22,7 +30,7 @@ export interface IOptions {
     }): void;
     /**
      * the max value that can be scaled up to.
-     * default to 5;
+     * default to 50;
      */
     maxScale?: number;
     /**
@@ -30,9 +38,6 @@ export interface IOptions {
      * default to 1;
      */
     minScale?: number;
-    /**
-      * if to move to start when scale down. default to true
-      */
     /**
      * if to take the mouse position as the transform origin.
      */

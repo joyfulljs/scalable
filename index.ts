@@ -1,3 +1,15 @@
+import { getProperty } from '@joyfulljs/vendor-property';
+
+/**
+ * `transformOrigin` property name with browser vendor prefix if needed.
+ */
+export const transformOriginProperty = getProperty('transformOrigin');
+
+/**
+ * `transform` property name with browser vendor prefix if needed.
+ */
+export const transformProperty = getProperty('transform');
+
 /**
  * make html element scalable by mouse wheel
  * @param el target html element
@@ -5,10 +17,13 @@
  */
 export default function Scalable(el: HTMLElement, options?: IOptions) {
 
-  const { onScaleChange, maxScale = 5, minScale = 1, followMouse = true } = options || {};
+  const { onScaleChange, maxScale = 50, minScale = 1, followMouse = true } = options || {};
+
   const computedStyle = window.getComputedStyle(el);
-  const oldOrigin = computedStyle.transformOrigin;
-  const oldTrans = computedStyle.transform;
+  // @ts-ignore  ts handle string index incorrectly. so ingore.
+  const oldOrigin = computedStyle[transformOriginProperty];
+  // @ts-ignore
+  const oldTrans = computedStyle[transformProperty];
 
   let mouseX: number = -1, mouseY: number = -1;
 
@@ -37,7 +52,8 @@ export default function Scalable(el: HTMLElement, options?: IOptions) {
     }
     parts[0] = scale;
     parts[3] = scale;
-    el.style.transform = `matrix(${parts.join(",")})`;
+    // @ts-ignore
+    el.style[transformProperty] = `matrix(${parts.join(",")})`;
     if (onScaleChange) {
       onScaleChange({ scale })
     }
@@ -47,8 +63,10 @@ export default function Scalable(el: HTMLElement, options?: IOptions) {
   function reset() {
     mouseX = -1;
     mouseY = -1;
-    el.style.transformOrigin = oldOrigin;
-    el.style.transform = oldTrans;
+    // @ts-ignore
+    el.style[transformOriginProperty] = oldOrigin;
+    // @ts-ignore
+    el.style[transformProperty] = oldTrans;
   }
 
   function mousemove(e: MouseEvent) {
@@ -58,7 +76,8 @@ export default function Scalable(el: HTMLElement, options?: IOptions) {
 
   el.parentNode.addEventListener('wheel', handleScale);
   if (followMouse) {
-    el.style.transformOrigin = '0 0';
+    // @ts-ignore
+    el.style[transformOriginProperty] = '0 0';
     el.addEventListener("mousemove", mousemove);
   }
 
@@ -76,7 +95,8 @@ export default function Scalable(el: HTMLElement, options?: IOptions) {
  * @param el target html element
  */
 export function getTransform(el: HTMLElement): string[] {
-  let transform = window.getComputedStyle(el).transform;
+  // @ts-ignore
+  let transform = window.getComputedStyle(el)[transformProperty];
   if (!transform || transform === 'none') {
     transform = 'matrix(1, 0, 0, 1, 0, 0)'
   }
@@ -91,7 +111,7 @@ export interface IOptions {
   onScaleChange(e: { scale: number }): void;
   /**
    * the max value that can be scaled up to. 
-   * default to 5;
+   * default to 50;
    */
   maxScale?: number;
   /**
@@ -99,10 +119,6 @@ export interface IOptions {
    * default to 1;
    */
   minScale?: number;
-  /**
-    * if to move to start when scale down. default to true
-    */
-  // moveToStart?: boolean;
   /**
    * if to take the mouse position as the transform origin.
    */
