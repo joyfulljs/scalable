@@ -20,6 +20,11 @@ export default function Scalable(el: HTMLElement, options?: IOptions): {
  * @param el target html element
  */
 export declare function getTransform(el: HTMLElement): string[];
+/**
+ * get computed style of transformOrigin
+ * @param el target html element
+ */
+export declare function getTransformOrigin(el: HTMLElement): number[];
 export interface IOptions {
     /**
      * triggered when user scaling
@@ -30,7 +35,7 @@ export interface IOptions {
     }): void;
     /**
      * the max value that can be scaled up to.
-     * default to 50;
+     * default to 10;
      */
     maxScale?: number;
     /**
