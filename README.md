@@ -30,8 +30,6 @@ unmount(){
 
 [docs](./index.d.ts)
 
-```
-
 # LICENSE
 
 MIT
